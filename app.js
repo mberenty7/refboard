@@ -493,8 +493,9 @@
   }
 
   async function addImages(blobs) {
+    const all = blobs.length;
     blobs = blobs.filter((b) => b && (!b.type || b.type.startsWith('image/')));
-    if (!blobs.length) return;
+    if (!blobs.length) { if (all) toast('Those files aren’t images'); return; }
     if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
     toast(blobs.length > 1 ? `Adding ${blobs.length} images…` : 'Adding image…', 10000);
     const added = [];
@@ -861,7 +862,7 @@
     const btn = e.target.closest('button');
     if (!btn) return;
     switch (btn.dataset.act) {
-      case 'add': $('#file-input').click(); break;
+      case 'add': toggleAddMenu(btn); return;
       case 'paste': pasteFromClipboard(); break;
       case 'undo': undo(); break;
       case 'redo': redo(); break;
@@ -927,10 +928,32 @@
     requestRender();
   }
 
-  $('#file-input').addEventListener('change', (e) => {
-    addImages([...e.target.files]);
-    e.target.value = '';
+  const addMenu = $('#add-menu');
+  function toggleAddMenu(btn) {
+    if (!addMenu.classList.contains('hidden')) { addMenu.classList.add('hidden'); return; }
+    const r = btn.getBoundingClientRect();
+    addMenu.style.top = r.bottom + 10 + 'px';
+    addMenu.classList.remove('hidden');
+    addMenu.style.left = clamp(r.left, 8, W - addMenu.offsetWidth - 8) + 'px';
+  }
+  addMenu.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-add]');
+    if (!btn) return;
+    addMenu.classList.add('hidden');
+    $(btn.dataset.add === 'files' ? '#files-input' : '#file-input').click();
   });
+  document.addEventListener('pointerdown', (e) => {
+    if (!addMenu.classList.contains('hidden') && !addMenu.contains(e.target) && !e.target.closest('[data-act=add]')) {
+      addMenu.classList.add('hidden');
+    }
+  }, true);
+
+  for (const id of ['#file-input', '#files-input']) {
+    $(id).addEventListener('change', (e) => {
+      addImages([...e.target.files]);
+      e.target.value = '';
+    });
+  }
 
   $('#palette-clear').addEventListener('click', () => {
     board.palette = [];

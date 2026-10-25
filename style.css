@@ -189,6 +189,41 @@ html, body {
 #dialog-ok.danger { background: var(--danger); }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--ui-active); outline-offset: 2px; }
 
+/* Add-images menu */
+#add-menu {
+  position: fixed;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: var(--ui-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+}
+#add-menu button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 250px;
+  padding: 10px 14px 10px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ui-fg);
+  font: inherit;
+  text-align: left;
+}
+#add-menu button:active { background: var(--ui-hover); }
+#add-menu svg {
+  flex: 0 0 auto;
+  width: 26px; height: 26px;
+  fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+#add-menu span { display: flex; flex-direction: column; }
+#add-menu small { color: var(--ui-dim); font-size: 12px; }
+
 /* Palette tray */
 #palette {
   right: max(8px, env(safe-area-inset-right));

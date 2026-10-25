@@ -98,6 +98,7 @@
           <li><b>Value studies:</b> select a photo and tap <i>Color</i> to cycle Gray → 3 values → 5 values.</li>
           <li><b>Color picker:</b> turn it on and touch a photo. The loupe shows the hex color and value (0% black – 100% white). Picked colors collect in the tray.</li>
           <li><b>Painting mode</b> (lock) stops photos moving when your hand brushes the screen.</li>
+          <li><b>From Dropbox:</b> tap <b>+</b> → <i>Files &amp; Dropbox</i>, open the ☰ side menu and choose Dropbox (the Dropbox app must be installed). Or in the Dropbox app, select photos → Share → <i>Send a copy</i> → RefBoard.</li>
           <li>Install it: Chrome menu → <i>Add to Home screen</i>. Then you can share images from other apps straight into RefBoard.</li>
           <li>Everything is stored on this device. Use <i>Export board</i> to back up.</li>
         </ul>
@@ -120,7 +121,21 @@
     </form>
   </div>
 
+  <!-- Add-images menu -->
+  <div id="add-menu" class="hidden">
+    <button data-add="photos">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/></svg>
+      <span><b>Photos</b><small>Gallery on this tablet</small></span>
+    </button>
+    <button data-add="files">
+      <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <span><b>Files &amp; Dropbox</b><small>Pick Dropbox from the ☰ side menu</small></span>
+    </button>
+  </div>
+
   <input id="file-input" type="file" accept="image/*" multiple hidden>
+  <!-- No accept filter, so Android opens its full file browser (Dropbox, Drive, Downloads…) instead of the photo picker -->
+  <input id="files-input" type="file" multiple hidden>
   <input id="import-input" type="file" accept=".json,application/json" hidden>
 
   <script src="app.js"></script>
