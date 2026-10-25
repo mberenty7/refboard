@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --ui-bg: rgba(32, 32, 34, 0.92);
   --ui-fg: #e8e8e8;
   --ui-dim: #9a9a9a;
@@ -119,6 +120,9 @@ html, body {
 /* Empty-state hint */
 #empty-hint {
   position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -129,6 +133,61 @@ html, body {
 }
 .hint-title { font-size: 28px; font-weight: 700; color: var(--ui-fg); margin-bottom: 8px; }
 .hint-sub { font-size: 13px; margin-top: 8px; }
+#load-samples {
+  margin-top: 18px;
+  padding: 12px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  background: var(--ui-bg);
+  color: var(--ui-fg);
+  font: inherit;
+  font-weight: 600;
+  pointer-events: auto;
+}
+
+/* Dialog */
+#dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 16px;
+}
+.dialog-card {
+  width: min(380px, 100%);
+  background: #26262a;
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+#dialog-title { font-size: 17px; font-weight: 600; }
+#dialog-input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #1b1b1e;
+  color: var(--ui-fg);
+  font: inherit;
+  font-size: 16px;
+}
+.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.dialog-actions button {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ui-fg);
+  font: inherit;
+  font-weight: 600;
+}
+#dialog-ok { background: var(--ui-active); color: #fff; }
+#dialog-ok.danger { background: var(--danger); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--ui-active); outline-offset: 2px; }
 
 /* Palette tray */
 #palette {

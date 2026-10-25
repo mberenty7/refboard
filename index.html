@@ -18,6 +18,7 @@
     <div class="hint-title">RefBoard</div>
     <div>Tap <b>+</b> to add reference photos</div>
     <div class="hint-sub">Drag with one finger to pan · pinch to zoom · tap a photo to select it</div>
+    <button id="load-samples">Load sample photos</button>
   </div>
 
   <!-- Main toolbar -->
@@ -106,6 +107,18 @@
   </div>
 
   <div id="toast" class="hidden"></div>
+
+  <!-- In-app dialog (browser prompt/confirm are unavailable in some embeds) -->
+  <div id="dialog" class="hidden">
+    <form class="dialog-card" id="dialog-form">
+      <div id="dialog-title"></div>
+      <input id="dialog-input" type="text" autocomplete="off" maxlength="80">
+      <div class="dialog-actions">
+        <button type="button" id="dialog-cancel">Cancel</button>
+        <button type="submit" id="dialog-ok">OK</button>
+      </div>
+    </form>
+  </div>
 
   <input id="file-input" type="file" accept="image/*" multiple hidden>
   <input id="import-input" type="file" accept=".json,application/json" hidden>

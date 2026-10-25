@@ -43,6 +43,28 @@
     toastTimer = setTimeout(() => toastEl.classList.add('hidden'), ms);
   }
 
+  // In-app replacement for prompt()/confirm(). Resolves to the text (or true) on OK, null on cancel.
+  function ask(title, { value = null, okLabel = 'OK', danger = false } = {}) {
+    const dlg = $('#dialog'), input = $('#dialog-input'), ok = $('#dialog-ok');
+    $('#dialog-title').textContent = title;
+    input.classList.toggle('hidden', value === null);
+    input.value = value || '';
+    ok.textContent = okLabel;
+    ok.classList.toggle('danger', danger);
+    dlg.classList.remove('hidden');
+    if (value !== null) setTimeout(() => { input.focus(); input.select(); }, 30);
+    return new Promise((resolve) => {
+      const done = (result) => {
+        dlg.classList.add('hidden');
+        $('#dialog-form').onsubmit = $('#dialog-cancel').onclick = dlg.onclick = null;
+        resolve(result);
+      };
+      $('#dialog-form').onsubmit = (e) => { e.preventDefault(); done(value === null ? true : input.value); };
+      $('#dialog-cancel').onclick = () => done(null);
+      dlg.onclick = (e) => { if (e.target === dlg) done(null); };
+    });
+  }
+
   // ---------- IndexedDB ----------
   let dbp = null;
   function db() {
@@ -965,7 +987,7 @@
     if (!btn) return;
     switch (btn.dataset.menu) {
       case 'new': {
-        const name = prompt('Board name', 'New board');
+        const name = await ask('Name the new board', { value: 'New board', okLabel: 'Create' });
         if (name === null) return;
         const b = newBoard(name.trim() || 'Untitled');
         await idbPut('boards', b);
@@ -974,7 +996,7 @@
         break;
       }
       case 'rename': {
-        const name = prompt('Rename board', board.name);
+        const name = await ask('Rename board', { value: board.name, okLabel: 'Rename' });
         if (!name || !name.trim()) return;
         board.name = name.trim();
         $('#board-name').textContent = board.name;
@@ -983,7 +1005,7 @@
         break;
       }
       case 'delete': {
-        if (!confirm(`Delete "${board.name}" and its photos? This cannot be undone.`)) return;
+        if (!await ask(`Delete "${board.name}" and its photos? This cannot be undone.`, { okLabel: 'Delete', danger: true })) return;
         await idbDel('boards', board.id);
         const rest = (await idbGetAll('boards')).sort((a, b) => b.updated - a.updated);
         const next = rest[0] || newBoard('My board');
@@ -1058,6 +1080,78 @@
     }
   });
 
+  // ---------- Sample photos ----------
+  // Painted procedurally so the app can be tried without picking files.
+  function paintSample(kind) {
+    const c = document.createElement('canvas');
+    const g = c.getContext('2d');
+    const rnd = (() => { let s = kind.length * 9973; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();
+    if (kind === 'sunset') {
+      c.width = 1600; c.height = 1000;
+      const sky = g.createLinearGradient(0, 0, 0, 640);
+      sky.addColorStop(0, '#2b3a67'); sky.addColorStop(0.45, '#c86b6b'); sky.addColorStop(0.8, '#f2b766'); sky.addColorStop(1, '#f7dc9c');
+      g.fillStyle = sky; g.fillRect(0, 0, 1600, 1000);
+      g.fillStyle = '#fff1c9'; g.beginPath(); g.arc(1080, 560, 70, 0, 7); g.fill();
+      const ridges = [['#6b5a7a', 560, 90], ['#4a4366', 640, 70], ['#2e2c45', 740, 60]];
+      for (const [col, base, amp] of ridges) {
+        g.fillStyle = col; g.beginPath(); g.moveTo(0, 1000);
+        for (let x = 0; x <= 1600; x += 40) g.lineTo(x, base - Math.sin(x / 210 + base) * amp - rnd() * 25);
+        g.lineTo(1600, 1000); g.fill();
+      }
+      const lake = g.createLinearGradient(0, 820, 0, 1000);
+      lake.addColorStop(0, '#d79a6a'); lake.addColorStop(1, '#3b3a5c');
+      g.fillStyle = lake; g.fillRect(0, 840, 1600, 160);
+    } else if (kind === 'pears') {
+      c.width = 1100; c.height = 1300;
+      g.fillStyle = '#e9e1d2'; g.fillRect(0, 0, 1100, 1300);
+      g.fillStyle = '#8c7a62'; g.fillRect(0, 860, 1100, 440);
+      const pear = (x, y, k, col, shade) => {
+        g.save(); g.translate(x, y); g.scale(k, k);
+        g.fillStyle = 'rgba(40,30,20,0.25)'; g.beginPath(); g.ellipse(40, 250, 210, 40, 0, 0, 7); g.fill();
+        const gr = g.createRadialGradient(-60, 40, 20, 0, 80, 260);
+        gr.addColorStop(0, '#f6e9a0'); gr.addColorStop(0.4, col); gr.addColorStop(1, shade);
+        g.fillStyle = gr; g.beginPath();
+        g.ellipse(0, 120, 170, 160, 0, 0, 7); g.ellipse(0, -60, 100, 120, 0, 0, 7); g.fill();
+        g.strokeStyle = '#5a3d22'; g.lineWidth = 14; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(0, -175); g.quadraticCurveTo(10, -230, 40, -250); g.stroke();
+        g.restore();
+      };
+      pear(380, 660, 1, '#b9c35a', '#5c6a2a');
+      pear(720, 720, 0.85, '#d6a84a', '#7a4a22');
+    } else {
+      c.width = 1400; c.height = 1050;
+      const sky = g.createLinearGradient(0, 0, 0, 560);
+      sky.addColorStop(0, '#6f9ec4'); sky.addColorStop(1, '#d9e6ec');
+      g.fillStyle = sky; g.fillRect(0, 0, 1400, 1050);
+      for (let i = 0; i < 6; i++) {
+        g.fillStyle = 'rgba(255,255,255,0.8)'; g.beginPath();
+        const cx = rnd() * 1400, cy = 80 + rnd() * 250;
+        for (let j = 0; j < 5; j++) {
+          g.moveTo(cx + j * 45 + 70, cy + Math.sin(j) * 15);
+          g.ellipse(cx + j * 45, cy + Math.sin(j) * 15, 70, 35, 0, 0, Math.PI * 2);
+        }
+        g.fill('nonzero');
+      }
+      const sea = g.createLinearGradient(0, 560, 0, 820);
+      sea.addColorStop(0, '#2f6f8a'); sea.addColorStop(1, '#5fa3a6');
+      g.fillStyle = sea; g.fillRect(0, 560, 1400, 260);
+      g.fillStyle = '#e3d3ae'; g.beginPath(); g.moveTo(0, 820);
+      for (let x = 0; x <= 1400; x += 50) g.lineTo(x, 800 + Math.sin(x / 160) * 18);
+      g.lineTo(1400, 1050); g.lineTo(0, 1050); g.fill();
+      g.fillStyle = '#3d3a36'; g.beginPath(); g.moveTo(820, 560); g.lineTo(900, 470); g.lineTo(1010, 430); g.lineTo(1150, 500); g.lineTo(1220, 560); g.fill();
+      g.fillStyle = '#fff'; g.beginPath(); g.moveTo(400, 600); g.lineTo(430, 470); g.lineTo(450, 600); g.fill();
+    }
+    return new Promise((r) => c.toBlob(r, 'image/png'));
+  }
+  async function loadSamples() {
+    const blobs = await Promise.all(['sunset', 'pears', 'coast'].map(paintSample));
+    await addImages(blobs);
+    selectedId = null;
+    updateUI();
+    fitTo(board.items);
+  }
+  $('#load-samples').addEventListener('click', loadSamples);
+
   // ---------- Startup ----------
   window.addEventListener('resize', resize);
   document.addEventListener('fullscreenchange', resize);
@@ -1075,6 +1169,7 @@
       requestRender();
       await gcImages().catch(() => {});
       await importShared();
+      if (firstRun && window.REFBOARD_DEMO) await loadSamples();
     } catch (err) {
       console.error(err);
       toast('Storage is unavailable — is this a private window?', 6000);
@@ -1085,7 +1180,7 @@
     }
   })();
 
-  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  if (!window.REFBOARD_DEMO && 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     navigator.serviceWorker.register('sw.js').catch((err) => console.warn('SW registration failed', err));
   }
 })();
