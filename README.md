@@ -15,7 +15,7 @@ An infinite reference canvas for tablets, in the spirit of PureRef, built for pa
 - **Color picker**: touch a photo to read its hex color and value %; picks collect in a palette tray
 - **Painting mode**: locks every photo so a brushing hand can't move things; pan and zoom still work
 - **Keep screen awake**, fullscreen, three background tones (dark, mid gray, paper)
-- **Add photos** from the gallery, from Files & Dropbox, by paste, by drag and drop, or by sharing from other apps
+- **Add photos** from the gallery, from Google Drive or other files, by paste, by drag and drop, or by sharing from other apps
 - **Multiple boards** saved on the device (IndexedDB); export and import a board as a single `.json` file for backup
 - Big photos are downscaled to 2048 px on import to stay light on tablet memory
 
@@ -25,10 +25,11 @@ An infinite reference canvas for tablets, in the spirit of PureRef, built for pa
 2. Tap **⋮ → Add to home screen → Install**.
 3. It opens fullscreen, works offline, and shows up in the Android Share menu.
 
-### Adding images from Dropbox
+### Adding images from Google Drive
 
-- Tap **+ → Files & Dropbox**, open the **☰** side menu in the file browser and choose **Dropbox** (the Dropbox app must be installed), or
-- In the Dropbox app, select photos and tap **Share → Send a copy → RefBoard** (needs the installed app).
+Tap **+ → Files & Drive**, open the **☰** side menu in the file browser and choose **Drive**. Press Back to leave the file browser without picking anything.
+
+You can also share photos into RefBoard from other apps (needs the installed app).
 
 ## Gestures
 
